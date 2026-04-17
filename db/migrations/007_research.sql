@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS research (
-    id          SERIAL PRIMARY KEY,
-    player_id   BIGINT REFERENCES players(discord_id) ON DELETE CASCADE,
-    research_id TEXT NOT NULL,
-    unlocked_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(player_id, research_id)
+    id              SERIAL PRIMARY KEY,
+    guild_id        BIGINT NOT NULL,
+    discord_id      BIGINT NOT NULL,
+    research_id     TEXT NOT NULL,
+    unlocked_at     TIMESTAMP DEFAULT NOW(),
+    UNIQUE(guild_id, discord_id, research_id)
 );
