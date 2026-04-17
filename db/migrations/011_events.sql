@@ -1,19 +1,17 @@
 CREATE TABLE IF NOT EXISTS events_log (
-    id          SERIAL PRIMARY KEY,
-    turn        INTEGER,
-    event_type  TEXT NOT NULL,
-    target      TEXT,
-    description TEXT,
-    created_at  TIMESTAMP DEFAULT NOW()
+    id              SERIAL PRIMARY KEY,
+    guild_id        BIGINT NOT NULL,
+    turn            INTEGER,
+    event_type      TEXT NOT NULL,
+    target          TEXT,
+    description     TEXT,
+    created_at      TIMESTAMP DEFAULT NOW()
 );
+CREATE INDEX IF NOT EXISTS events_guild ON events_log(guild_id);
 
 CREATE TABLE IF NOT EXISTS game_state (
-    key     TEXT PRIMARY KEY,
-    value   TEXT
+    guild_id        BIGINT NOT NULL,
+    key             TEXT NOT NULL,
+    value           TEXT,
+    PRIMARY KEY (guild_id, key)
 );
-
-INSERT INTO game_state (key, value) VALUES
-    ('turn', '1'),
-    ('paused', 'false'),
-    ('turn_interval_hours', '24')
-ON CONFLICT DO NOTHING;
