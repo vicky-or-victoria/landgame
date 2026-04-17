@@ -21,39 +21,45 @@ TRADITION_COSTS = {
     "iron_discipline":    {"influence": 55},
 }
 
-async def post_public(bot, mention: str, embed: discord.Embed):
-    channel_id = bot.config.get_channel("commands")
+
+async def post_public(bot, guild_id: int, mention: str, embed: discord.Embed):
+    cfg = bot.guild_config(guild_id)
+    channel_id = await cfg.get_channel("commands")
     if channel_id:
         channel = bot.get_channel(channel_id)
         if channel:
             await channel.send(content=mention, embed=embed)
 
+
 async def handle_research(interaction: discord.Interaction, research_id: str):
     await interaction.response.defer(ephemeral=True)
     bot = interaction.client
+    guild_id = interaction.guild_id
     research_id = research_id.lower().replace(" ", "_")
     cost = RESEARCH_COSTS.get(research_id)
     if not cost:
         await interaction.followup.send(embed=embeds.error("Unknown Research", f"No research named {research_id}."), ephemeral=True)
         return
-    player = await get_player(bot, interaction.user.id)
+    player = await get_player(bot, guild_id, interaction.user.id)
     if not player:
         await interaction.followup.send(embed=embeds.error("Not Registered", "You are not a registered player."), ephemeral=True)
         return
     if player["influence"] < cost.get("influence", 0) or player["gold"] < cost.get("gold", 0):
         await interaction.followup.send(embed=embeds.error("Insufficient Resources", f"Requires {cost}."), ephemeral=True)
         return
-    unlocked = await unlock_research(bot, interaction.user.id, research_id)
+    unlocked = await unlock_research(bot, guild_id, interaction.user.id, research_id)
     if not unlocked:
         await interaction.followup.send(embed=embeds.error("Already Researched", f"{research_id} is already unlocked."), ephemeral=True)
         return
-    await adjust_resources(bot, interaction.user.id, gold=-cost.get("gold", 0), influence=-cost.get("influence", 0))
+    await adjust_resources(bot, guild_id, interaction.user.id, gold=-cost.get("gold", 0), influence=-cost.get("influence", 0))
     await interaction.followup.send(embed=embeds.politics("Research Unlocked", f"{research_id} has been researched."), ephemeral=True)
-    await post_public(bot, interaction.user.mention, embeds.politics(f"Research — {research_id}", f"{interaction.user.display_name} unlocked {research_id}."))
+    await post_public(bot, guild_id, interaction.user.mention, embeds.politics(f"Research — {research_id}", f"{interaction.user.display_name} unlocked {research_id}."))
+
 
 class Politics(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
 
 async def setup(bot):
     await bot.add_cog(Politics(bot))
