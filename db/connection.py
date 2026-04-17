@@ -1,9 +1,10 @@
 import asyncpg
 import os
 
+# Single shared pool — guild isolation is done via guild_id columns in every table.
 _pool = None
 
-async def get_pool():
+async def get_pool() -> asyncpg.Pool:
     global _pool
     if _pool is None:
         _pool = await asyncpg.create_pool(dsn=os.getenv("DATABASE_URL"))
