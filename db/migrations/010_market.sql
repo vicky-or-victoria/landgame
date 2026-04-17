@@ -1,22 +1,20 @@
 CREATE TABLE IF NOT EXISTS market_orders (
-    id          SERIAL PRIMARY KEY,
-    player_id   BIGINT REFERENCES players(discord_id) ON DELETE CASCADE,
-    resource    TEXT NOT NULL,
-    amount      INTEGER NOT NULL,
-    price       INTEGER NOT NULL,
-    order_type  TEXT NOT NULL,
-    filled      BOOLEAN DEFAULT FALSE,
-    created_at  TIMESTAMP DEFAULT NOW()
+    id              SERIAL PRIMARY KEY,
+    guild_id        BIGINT NOT NULL,
+    owner_id        BIGINT NOT NULL,
+    resource        TEXT NOT NULL,
+    amount          INTEGER NOT NULL,
+    price           INTEGER NOT NULL,
+    order_type      TEXT NOT NULL,
+    filled          BOOLEAN DEFAULT FALSE,
+    created_at      TIMESTAMP DEFAULT NOW()
 );
+CREATE INDEX IF NOT EXISTS market_guild ON market_orders(guild_id);
 
 CREATE TABLE IF NOT EXISTS market_prices (
-    resource    TEXT PRIMARY KEY,
-    price       INTEGER NOT NULL,
-    updated_at  TIMESTAMP DEFAULT NOW()
+    guild_id        BIGINT NOT NULL,
+    resource        TEXT NOT NULL,
+    price           INTEGER NOT NULL,
+    updated_at      TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (guild_id, resource)
 );
-
-INSERT INTO market_prices (resource, price) VALUES
-    ('gold', 1),
-    ('food', 2),
-    ('materials', 3)
-ON CONFLICT DO NOTHING;
