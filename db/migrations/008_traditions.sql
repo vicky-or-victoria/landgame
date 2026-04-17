@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS traditions (
     id              SERIAL PRIMARY KEY,
-    player_id       BIGINT REFERENCES players(discord_id) ON DELETE CASCADE,
+    guild_id        BIGINT NOT NULL,
+    discord_id      BIGINT NOT NULL,
     tradition_id    TEXT NOT NULL,
     unlocked_at     TIMESTAMP DEFAULT NOW(),
-    UNIQUE(player_id, tradition_id)
+    UNIQUE(guild_id, discord_id, tradition_id)
 );
