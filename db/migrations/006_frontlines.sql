@@ -1,10 +1,12 @@
 CREATE TABLE IF NOT EXISTS frontlines (
     id              SERIAL PRIMARY KEY,
-    tile_coord      TEXT REFERENCES tiles(coord),
-    attacker_id     BIGINT REFERENCES players(discord_id),
-    defender_id     BIGINT REFERENCES players(discord_id),
-    attacker_army   INTEGER REFERENCES armies(id),
-    defender_army   INTEGER REFERENCES armies(id),
+    guild_id        BIGINT NOT NULL,
+    tile_coord      TEXT,
+    attacker_id     BIGINT,
+    defender_id     BIGINT,
+    attacker_army   INTEGER,
+    defender_army   INTEGER,
     started_at      TIMESTAMP DEFAULT NOW(),
     resolved        BOOLEAN DEFAULT FALSE
 );
+CREATE INDEX IF NOT EXISTS frontlines_guild ON frontlines(guild_id, tile_coord);
