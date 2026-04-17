@@ -1,5 +1,7 @@
+-- Per-guild player registry
 CREATE TABLE IF NOT EXISTS players (
-    discord_id      BIGINT PRIMARY KEY,
+    guild_id        BIGINT NOT NULL,
+    discord_id      BIGINT NOT NULL,
     name            TEXT NOT NULL,
     gold            INTEGER DEFAULT 300,
     food            INTEGER DEFAULT 200,
@@ -7,5 +9,6 @@ CREATE TABLE IF NOT EXISTS players (
     influence       INTEGER DEFAULT 0,
     prestige        INTEGER DEFAULT 0,
     grace_until     TIMESTAMP,
-    registered_at   TIMESTAMP DEFAULT NOW()
+    registered_at   TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (guild_id, discord_id)
 );
